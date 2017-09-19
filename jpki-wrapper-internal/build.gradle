@@ -1,0 +1,30 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+archivesBaseName = 'jpki-wrapper-internal'
+
+tasks.withType(JavaCompile) {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    compileJava.options.bootClasspath = "$System.env.JAVA_HOME/jre/lib/rt.jar"
+}
+
+def defaultEncoding = 'UTF-8'
+tasks.withType(AbstractCompile).each { it.options.encoding = defaultEncoding }
+tasks.withType(GroovyCompile).each { it.groovyOptions.encoding = defaultEncoding }
+
+javadoc {
+	options.charSet = 'UTF-8'
+	options.encoding = 'UTF-8'
+	options.stylesheetFile = new File(rootDir, 'javadoc.css')
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+	compile fileTree(dir: 'libs', include: ['**/*.jar'], excludes: ['**/*-sources.jar', '**/*-javadoc.jar'])
+}
+
+defaultTasks 'clean', 'build'

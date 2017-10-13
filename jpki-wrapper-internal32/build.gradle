@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
-archivesBaseName = 'jpki-wrapper-internal'
+archivesBaseName = 'jpki-wrapper-internal32'
 
 tasks.withType(JavaCompile) {
     sourceCompatibility = 1.8

@@ -10,7 +10,7 @@ import jp.go.jpki.appli.JPKICryptSignJNIException;
 public class JPKICryptSignProvider implements Closeable {
 	
 	private JPKICryptSignJNI jpkiCryptSign;
-	private int hProv;
+	private long hProv;
 	
 	public JPKICryptSignProvider() throws JPKICryptSignJNIException {
 		jpkiCryptSign = new JPKICryptSignJNI();
@@ -21,12 +21,12 @@ public class JPKICryptSignProvider implements Closeable {
 		return jpkiCryptSign;
 	}
 	
-	public int getProviderHandle() {
+	/* package private */ long getProviderHandle() {
 		return hProv;
 	}
 	
 	public byte[] getCertificate() throws JPKICryptSignJNIException {
-		int hKey = 0;
+		long hKey = 0;
 		try {
 			hKey = jpkiCryptSign.cryptGetUserKey(hProv);
 			byte[] cert = jpkiCryptSign.cryptGetCertificateValue(hKey);

@@ -1,7 +1,6 @@
 package net.osdn.jpki.wrapper;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
@@ -23,16 +22,6 @@ import com.sun.jna.platform.win32.Win32Exception;
 import com.sun.jna.platform.win32.WinReg;
 
 public class JpkiWrapper {
-	
-	public static void main(String[] args) throws Exception {
-		
-		JpkiWrapper wrapper = new JpkiWrapper();
-		wrapper.setApplicationName("JPKI PDF SIGNER");
-		wrapper.setApplicationVersion("1.0");
-		PDDocument document = PDDocument.load(new File("test1.pdf"));
-		FileOutputStream output = new FileOutputStream("output.pdf");
-		wrapper.addSignature(output, document);
-	}
 	
 	private Pattern ERROR_CODE_PATTERN = Pattern.compile("!ErrorCode=([-]?[0-9]+),WinErrorCode=([-]?[0-9]+)");
 	private static ClassLoader loader;
@@ -156,7 +145,7 @@ public class JpkiWrapper {
 		if(jarJPKIUserCertService.exists()) {
 			jars.add(jarJPKIUserCertService.toURI().toURL());
 		}
-		URLClassLoader loader = new InternalClassLoader(jars, JpkiWrapper.class.getClassLoader());
+		URLClassLoader loader = new InternalClassLoader(is64, jars, JpkiWrapper.class.getClassLoader());
 		return loader;
 	}
 	

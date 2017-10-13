@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 
 archivesBaseName = 'jpki-wrapper'
-version = '0.1'
+version = '0.3.1'
 
 tasks.withType(JavaCompile) {
     sourceCompatibility = 1.7
@@ -25,7 +25,8 @@ repositories {
 }
 
 dependencies {
-	compile project(':jpki-wrapper-internal')
+	compile project(':jpki-wrapper-internal32')
+	compile project(':jpki-wrapper-internal64')
 	compile fileTree(dir: 'libs', include: ['**/*.jar'], excludes: ['**/*-sources.jar', '**/*-javadoc.jar'])
 }
 
@@ -35,7 +36,8 @@ jar {
 	manifest {
 		attributes "Main-Class" : "net.osdn.jpki.wrapper.JpkiWrapper"
 	}
-	from('jpki-wrapper-internal/build/libs')
+	from('jpki-wrapper-internal32/build/libs')
+	from('jpki-wrapper-internal64/build/libs')
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

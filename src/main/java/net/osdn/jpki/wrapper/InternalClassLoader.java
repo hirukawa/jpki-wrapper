@@ -18,7 +18,7 @@ public class InternalClassLoader extends URLClassLoader {
 
 	private Map<String, byte[]> entries = new HashMap<String, byte[]>();
 	
-	public InternalClassLoader(List<URL> urls, ClassLoader parent) throws IOException {
+	public InternalClassLoader(boolean is64, List<URL> urls, ClassLoader parent) throws IOException {
 		super(urls.toArray(new URL[] {}), parent);
 
 		byte[] internalJar = null;
@@ -31,7 +31,12 @@ public class InternalClassLoader extends URLClassLoader {
 		}
 		*/
 		if(internalJar == null) {
-			InputStream is = getClass().getResourceAsStream("/jpki-wrapper-internal.jar");
+			InputStream is = null;
+			if(is64) {
+				is = getClass().getResourceAsStream("/jpki-wrapper-internal64.jar");
+			} else {
+				is = getClass().getResourceAsStream("/jpki-wrapper-internal32.jar");
+			}
 			try {
 				if(is != null) {
 					internalJar = IOUtils.toByteArray(is);

@@ -1,2 +1,3 @@
 rootProject.name = 'jpki-wrapper'
-include 'jpki-wrapper-internal'
+include 'jpki-wrapper-internal32'
+include 'jpki-wrapper-internal64'

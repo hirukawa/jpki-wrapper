@@ -1,19 +1,28 @@
 package net.osdn.jpki.wrapper;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 
@@ -38,19 +47,36 @@ public class JpkiWrapper {
 					null
 				);
 			} else {
-				addLibraryPath(jpkiInstallPath.getAbsolutePath());
 				boolean is64 = is64bitJavaVM();
-				System.loadLibrary(is64 ? "JPKICSPSign64" : "JPKICSPSign");
+				String version = System.getProperty("java.version");
+				if(version != null && version.startsWith("1.")) {
+					addLibraryPath(jpkiInstallPath.getAbsolutePath());
+				} else {
+					// Java 9 以降、privateなリフレクション操作が警告されるようになったので、
+					// java.library.pathを書き換えずに DLL を参照可能なディレクトリーにコピーします。
+					File libraryPath = getLibraryPath();
+					if(is64) {
+						copy(new File(jpkiInstallPath, "JPKICSPSign64.dll"), new File(libraryPath, "JPKICSPSign64.dll"));
+						copy(new File(jpkiInstallPath, "JPKI_JNI64.dll"), new File(libraryPath, "JPKI_JNI64.dll"));
+						copy(new File(jpkiInstallPath, "JPKISign_JNI64.dll"), new File(libraryPath, "JPKISign_JNI64.dll"));
+						copy(new File(jpkiInstallPath, "JPKIServiceAPI64.dll"), new File(libraryPath, "JPKIServiceAPI64.dll"));
+					} else {
+						copy(new File(jpkiInstallPath, "JPKICSPSign.dll"), new File(libraryPath, "JPKICSPSign.dll"));
+						copy(new File(jpkiInstallPath, "JPKI_JNI.dll"), new File(libraryPath, "JPKI_JNI.dll"));
+						copy(new File(jpkiInstallPath, "JPKISign_JNI.dll"), new File(libraryPath, "JPKISign_JNI.dll"));
+						copy(new File(jpkiInstallPath, "JPKIServiceAPI.dll"), new File(libraryPath, "JPKIServiceAPI.dll"));
+					}
+				}
 				loader = createClassLoader(jpkiInstallPath);
 				clsJpkiWrapper = Class.forName("net.osdn.jpki.wrapper.internal.JpkiWrapperInternal", true, loader);
 			}
+		} catch (URISyntaxException e) {
+			initializeError = e;
+			e.printStackTrace();
 		} catch (IOException e) {
 			initializeError = e;
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			initializeError = e;
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
 			initializeError = e;
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -59,7 +85,13 @@ public class JpkiWrapper {
 		} catch (IllegalArgumentException e) {
 			initializeError = e;
 			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			initializeError = e;
+			e.printStackTrace();
 		} catch (IllegalAccessException e) {
+			initializeError = e;
+			e.printStackTrace();
+		} catch(UnsatisfiedLinkError e) {
 			initializeError = e;
 			e.printStackTrace();
 		}
@@ -188,5 +220,37 @@ public class JpkiWrapper {
 		Field sysPathsField = ClassLoader.class.getDeclaredField("sys_paths");
 		sysPathsField.setAccessible(true);
 		sysPathsField.set(null, null);
+	}
+	
+	private static File getLibraryPath() throws URISyntaxException {
+		ProtectionDomain pd = JpkiWrapper.class.getProtectionDomain();
+		CodeSource cs = pd.getCodeSource();
+		URL location = cs.getLocation();
+		URI uri = location.toURI();
+		return new File(uri).getParentFile();
+	}
+	
+	private static void copy(File src, File dst) throws IOException {
+		if(!src.exists()) {
+			throw new FileNotFoundException(src.getAbsolutePath());
+		}
+		if(dst.exists() && dst.lastModified() == src.lastModified() && dst.length() == src.length()) {
+			return;
+		}
+		InputStream input = null;
+		OutputStream output = null;
+		try {
+			input = new FileInputStream(src);
+			output = new FileOutputStream(dst);
+			IOUtils.copy(input, output);
+		} finally {
+			if(output != null) {
+				try { output.close(); } catch(Exception e) {}
+			}
+			if(input != null) {
+				try { input.close(); } catch(Exception e) {}
+			}
+		}
+		dst.setLastModified(src.lastModified());
 	}
 }

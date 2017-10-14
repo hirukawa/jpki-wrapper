@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 
 archivesBaseName = 'jpki-wrapper'
-version = '0.3.1'
+version = '0.3.2'
 
 tasks.withType(JavaCompile) {
     sourceCompatibility = 1.7

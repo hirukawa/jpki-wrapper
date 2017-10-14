@@ -22,14 +22,6 @@ public class InternalClassLoader extends URLClassLoader {
 		super(urls.toArray(new URL[] {}), parent);
 
 		byte[] internalJar = null;
-		/*
-		File file = new File("jpki-wrapper-internal/build/libs/jpki-wrapper-internal.jar");
-		if(file.exists()) {
-			try(InputStream is = new FileInputStream(file)) {
-				internalJar = IOUtils.toByteArray(is);
-			}
-		}
-		*/
 		if(internalJar == null) {
 			InputStream is = null;
 			if(is64) {

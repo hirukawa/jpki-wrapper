@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry path="bin" kind="output"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/"/>
-	<classpathentry kind="con" path="org.eclipse.buildship.core.gradleclasspathcontainer"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="lib" path="D:/Eclipse/workspace/jpki-wrapper/jpki-wrapper-internal32/libs/bouncy-castle/bcpkix-jdk15on-158.jar"/>
+	<classpathentry kind="lib" path="D:/Eclipse/workspace/jpki-wrapper/jpki-wrapper-internal32/libs/bouncy-castle/bcprov-jdk15on-158.jar"/>
+	<classpathentry kind="lib" path="D:/Eclipse/workspace/jpki-wrapper/jpki-wrapper-internal32/libs/commons/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="D:/Eclipse/workspace/jpki-wrapper/jpki-wrapper-internal32/libs/jpki/JPKICryptSignJNI.jar"/>
+	<classpathentry kind="lib" path="D:/Eclipse/workspace/jpki-wrapper/jpki-wrapper-internal32/libs/jpki/JPKIUserCertService.jar"/>
+	<classpathentry kind="lib" path="D:/Eclipse/workspace/jpki-wrapper/jpki-wrapper-internal32/libs/pdfbox/fontbox-2.0.8.jar"/>
+	<classpathentry kind="lib" path="D:/Eclipse/workspace/jpki-wrapper/jpki-wrapper-internal32/libs/pdfbox/pdfbox-2.0.8.jar"/>
 </classpath>

@@ -1,6 +1,5 @@
 package net.osdn.jpki.wrapper;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,40 +11,34 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
-import org.apache.pdfbox.io.IOUtils;
-
 public class InternalClassLoader extends URLClassLoader {
 
-	private Map<String, byte[]> entries = new HashMap<String, byte[]>();
-	
-	public InternalClassLoader(boolean is64, List<URL> urls, ClassLoader parent) throws IOException {
-		super(urls.toArray(new URL[] {}), parent);
+	private static volatile Map<String, byte[]> entries;
 
-		byte[] internalJar = null;
-		if(internalJar == null) {
-			InputStream is = null;
-			if(is64) {
-				is = getClass().getResourceAsStream("/jpki-wrapper-internal64.jar");
-			} else {
-				is = getClass().getResourceAsStream("/jpki-wrapper-internal32.jar");
-			}
-			try {
-				if(is != null) {
-					internalJar = IOUtils.toByteArray(is);
-				}
-			} finally {
-				if(is != null) {
-					try { is.close(); } catch(Exception e) {}
-				}
+	private static void initialize() throws IOException {
+		String internalJarName = JpkiWrapper.is64bitJavaVM() ?
+				"/jpki-wrapper-internal64.jar":
+				"/jpki-wrapper-internal32.jar";
+
+		Map<String, byte[]> map = new HashMap<String, byte[]>();
+		try(InputStream is = InternalClassLoader.class.getResourceAsStream(internalJarName);
+			JarInputStream jar = new JarInputStream(is)) {
+			JarEntry entry;
+			while((entry = jar.getNextJarEntry()) != null) {
+				byte[] bytes = readJarEntryBytes(jar);
+				map.put(entry.getName(), bytes);
 			}
 		}
-		
-		if(internalJar != null) {
-			try(JarInputStream jar = new JarInputStream(new ByteArrayInputStream(internalJar))) {
-				JarEntry entry;
-				while((entry = jar.getNextJarEntry()) != null) {
-					byte[] bytes = readJarEntryBytes(jar);
-					entries.put(entry.getName(), bytes);
+		entries = map;
+	}
+	
+	public InternalClassLoader(List<URL> urls, ClassLoader parent) throws IOException {
+		super(urls.toArray(new URL[] {}), parent);
+
+		if(entries == null) {
+			synchronized (InternalClassLoader.class) {
+				if (entries == null) {
+					initialize();
 				}
 			}
 		}

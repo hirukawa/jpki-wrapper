@@ -2,12 +2,11 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 
 archivesBaseName = 'jpki-wrapper'
-version = '0.3.2'
+version = '0.3.3'
 
 tasks.withType(JavaCompile) {
-    sourceCompatibility = 1.7
-    targetCompatibility = 1.7
-    compileJava.options.bootClasspath = "$System.env.JAVA_HOME/jre/lib/rt.jar"
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
 }
 
 def defaultEncoding = 'UTF-8'
@@ -25,16 +24,20 @@ repositories {
 }
 
 dependencies {
-	compile project(':jpki-wrapper-internal32')
-	compile project(':jpki-wrapper-internal64')
-	compile fileTree(dir: 'libs', include: ['**/*.jar'], excludes: ['**/*-sources.jar', '**/*-javadoc.jar'])
+	implementation project(':jpki-wrapper-internal32')
+	implementation project(':jpki-wrapper-internal64')
+
+	implementation 'net.java.dev.jna:jna:5.4.0'
+	implementation 'net.java.dev.jna:jna-platform:5.4.0'
+	implementation 'org.apache.pdfbox:pdfbox:2.0.16'
 }
 
-defaultTasks 'clean', 'build', 'jarProperties'
+defaultTasks 'clean', 'build', 'jar', 'jarProperties'
 
 jar {
 	manifest {
-		attributes "Main-Class" : "net.osdn.jpki.wrapper.JpkiWrapper"
+		attributes "Specification-Version": "${project.version}"
+		attributes "Implementation-Version": "${project.version}"
 	}
 	from('jpki-wrapper-internal32/build/libs')
 	from('jpki-wrapper-internal64/build/libs')
@@ -43,18 +46,18 @@ jar {
 task sourcesJar(type: Jar, dependsOn: classes) {
 	setGroup('build')
 	setDescription('Assembles a jar archive containing the main source code.')
-    classifier = 'sources'
+	archiveClassifier = 'sources'
     from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
 	setGroup('documentation')
 	setDescription('Generates Javadoc API documentation as a jar archive.')
-    classifier = 'javadoc'
+	archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
 
-task jarProperties(dependsOn: [sourcesJar, javadocJar]) << {
+task jarProperties(dependsOn: [sourcesJar, javadocJar]) {
 	def f = file("${buildDir}/libs/${archivesBaseName}-${version}.jar.properties")
 	f.getParentFile().mkdirs();
 	f.write("src=${archivesBaseName}-${version}-sources.jar\n", 'UTF-8')
@@ -64,4 +67,14 @@ task jarProperties(dependsOn: [sourcesJar, javadocJar]) << {
 artifacts {
     archives sourcesJar
     archives javadocJar
+}
+
+task copyLibraries(type: Copy) {
+	setGroup("build")
+	setDescription("Copy dependency libraries.")
+	from (sourceSets.main.runtimeClasspath) {
+		include '*.jar'
+		exclude 'jpki-*', 'JPKI*'
+	}
+	into "${buildDir}/package/lib/"
 }

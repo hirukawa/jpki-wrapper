@@ -1,12 +1,10 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'java-library'
 
 archivesBaseName = 'jpki-wrapper-internal64'
 
 tasks.withType(JavaCompile) {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-    compileJava.options.bootClasspath = "$System.env.JAVA_HOME/jre/lib/rt.jar"
 }
 
 def defaultEncoding = 'UTF-8'
@@ -24,7 +22,14 @@ repositories {
 }
 
 dependencies {
-	compile fileTree(dir: 'libs', include: ['**/*.jar'], excludes: ['**/*-sources.jar', '**/*-javadoc.jar'])
+	implementation fileTree(dir: 'lib',
+			includes: ['**/*.jar'],
+			excludes: ['**/*-sources.jar', '**/*-javadoc.jar'])
+
+	implementation 'org.apache.pdfbox:pdfbox:2.0.16'
+	implementation 'org.bouncycastle:bcpkix-jdk15on:1.62'
 }
+
+rootProject.tasks.jar.dependsOn jar
 
 defaultTasks 'clean', 'build'

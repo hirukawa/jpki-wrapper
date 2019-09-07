@@ -13,5 +13,5 @@ public interface JpkiWrapper {
 
     public void setApplicationVersion(String version);
 
-    public void addSignature(OutputStream output, PDDocument document, String name, String reason, Date date, String location, String contact, SignatureOptions options) throws IOException, JpkiException;
+    public void addSignature(OutputStream output, PDDocument document, String name, String reason, Date date, String location, String contact, SignatureOptions options) throws IOException;
 }

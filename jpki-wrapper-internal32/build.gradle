@@ -11,12 +11,6 @@ def defaultEncoding = 'UTF-8'
 tasks.withType(AbstractCompile).each { it.options.encoding = defaultEncoding }
 tasks.withType(GroovyCompile).each { it.groovyOptions.encoding = defaultEncoding }
 
-javadoc {
-	options.charSet = 'UTF-8'
-	options.encoding = 'UTF-8'
-	options.stylesheetFile = new File(rootDir, 'javadoc.css')
-}
-
 repositories {
     jcenter()
 }
@@ -28,6 +22,10 @@ dependencies {
 
 	implementation 'org.apache.pdfbox:pdfbox:2.0.16'
 	implementation 'org.bouncycastle:bcpkix-jdk15on:1.62'
+}
+
+jar {
+	exclude '**/JpkiWrapper.class'
 }
 
 rootProject.tasks.jar.dependsOn jar

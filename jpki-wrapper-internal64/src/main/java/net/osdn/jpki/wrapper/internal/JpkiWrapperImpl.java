@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
 
-import net.osdn.jpki.wrapper.JpkiWrapper;
+import net.osdn.jpki.wrapper.JpkiWrapperInternal;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -21,22 +21,12 @@ import jp.go.jpki.appli.JPKIUserCertBasicData;
 import jp.go.jpki.appli.JPKIUserCertException;
 import jp.go.jpki.appli.JPKIUserCertService;
 
-public class JpkiWrapperImpl implements JpkiWrapper {
+public class JpkiWrapperImpl implements JpkiWrapperInternal {
 	
-	private String applicationName;
-	private String applicationVersion;
-	
-	public void setApplicationName(String name) {
-		applicationName = name;
-	}
-	
-	public void setApplicationVersion(String version) {
-		applicationVersion = version;
-	}
-	
-	public void addSignature(OutputStream output, PDDocument document, String name, String reason, Date date, String location, String contact, SignatureOptions options) throws IOException {
+	@Override
+	public void addSignature(OutputStream output, PDDocument document, String name, String reason, Date date, String location, String contact, SignatureOptions options, String applicationName, String applicationVersion) throws IOException {
 		try {
-			addSignatureWithJNIException(output, document, name, reason, date, location, contact, options);
+			addSignatureWithJNIException(output, document, name, reason, date, location, contact, options, applicationName, applicationVersion);
 		} catch (JPKICryptSignJNIException e) {
 			throw new IOException(String.format("!ErrorCode=%d,WinErrorCode=%d", e.getErrorCode(), e.getWinErrorCode()), e);
 		} catch (JPKIUserCertException e) {
@@ -44,7 +34,7 @@ public class JpkiWrapperImpl implements JpkiWrapper {
 		}
 	}
 	
-	private void addSignatureWithJNIException(OutputStream output, PDDocument document, String name, String reason, Date date, String location, String contact, SignatureOptions options) throws IOException, JPKICryptSignJNIException, JPKIUserCertException {
+	private void addSignatureWithJNIException(OutputStream output, PDDocument document, String name, String reason, Date date, String location, String contact, SignatureOptions options, String applicationName, String applicationVersion) throws IOException, JPKICryptSignJNIException, JPKIUserCertException {
 		int accessPermissions = getMDPPermission(document);
 		if (accessPermissions == 1) {
 			throw new IOException("この文書の変更は許可されていません。");

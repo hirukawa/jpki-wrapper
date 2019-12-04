@@ -4,6 +4,8 @@ public class JpkiException extends Exception {
 	private static final long serialVersionUID = 1L;
 
 	public static final int SCARD_E_NOT_READY = 0x80100010;
+	public static final int SCARD_E_UNKNOWN_CARD = 0x8010000D;
+	public static final int SCARD_W_CHV_BLOCKED = 0x8010006C;
 	public static final int SCARD_W_CANCELLED_BY_USER = 0x8010006E;
 
 	private int errorCode;
@@ -56,13 +58,21 @@ public class JpkiException extends Exception {
 	public static String[] getMessages(int errorCode, int winErrorCode) {
 		switch (winErrorCode) {
 			case SCARD_E_NOT_READY:
-				return new String[]{
+				return new String[] {
 						"The reader or smart card is not ready to accept commands.",
-						"読み取り装置またはスマート カードは、コマンドを受け取る準備ができていません。"};
+						"読み取り装置またはスマート カードは、コマンドを受け取る準備ができていません。" };
+			case SCARD_E_UNKNOWN_CARD:
+				return new String[] {
+						"The specified smart card name is not recognized.",
+						"認識できないスマート カードです。" };
+			case SCARD_W_CHV_BLOCKED:
+				return new String[] {
+						"The card cannot be accessed because the maximum number of PIN entry attempts has been reached.",
+						"パスワードの入力試行が最大回数に達したため、カードはロックされています。" };
 			case SCARD_W_CANCELLED_BY_USER:
-				return new String[]{
+				return new String[] {
 						"The action was cancelled by the user.",
-						"ユーザーによって操作は取り消されました。"};
+						"ユーザーによって操作は取り消されました。" };
 		}
 		return null;
 	}

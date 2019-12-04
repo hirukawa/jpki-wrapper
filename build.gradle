@@ -2,11 +2,12 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 
 archivesBaseName = 'jpki-wrapper'
-version = '0.3.4'
+version = '0.3.5'
 
 tasks.withType(JavaCompile) {
 	sourceCompatibility = 1.8
 	targetCompatibility = 1.8
+	options.compilerArgs << '-Xlint:all'
 }
 
 def defaultEncoding = 'UTF-8'
@@ -32,7 +33,7 @@ dependencies {
 	implementation 'org.apache.pdfbox:pdfbox:2.0.17'
 }
 
-defaultTasks 'clean', 'build', 'jar', 'jarProperties'
+defaultTasks 'clean', 'build', 'jar'
 
 jar {
 	manifest {
@@ -55,13 +56,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 	setDescription('Generates Javadoc API documentation as a jar archive.')
 	archiveClassifier = 'javadoc'
     from javadoc.destinationDir
-}
-
-task jarProperties(dependsOn: [sourcesJar, javadocJar]) {
-	def f = file("${buildDir}/libs/${archivesBaseName}-${version}.jar.properties")
-	f.getParentFile().mkdirs();
-	f.write("src=${archivesBaseName}-${version}-sources.jar\n", 'UTF-8')
-	f.append("doc=${archivesBaseName}-${version}-javadoc.jar\n", 'UTF-8')
 }
 
 artifacts {

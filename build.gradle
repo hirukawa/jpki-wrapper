@@ -1,8 +1,7 @@
 apply plugin: 'java'
-apply plugin: 'eclipse'
 
 archivesBaseName = 'jpki-wrapper'
-version = '0.3.5'
+version = '0.3.6'
 
 tasks.withType(JavaCompile) {
 	sourceCompatibility = 1.8
@@ -30,7 +29,7 @@ dependencies {
 
 	implementation 'net.java.dev.jna:jna:5.5.0'
 	implementation 'net.java.dev.jna:jna-platform:5.5.0'
-	implementation 'org.apache.pdfbox:pdfbox:2.0.17'
+	implementation 'org.apache.pdfbox:pdfbox:2.0.19'
 }
 
 defaultTasks 'clean', 'build', 'jar'

@@ -21,8 +21,8 @@ dependencies {
 			includes: ['**/*.jar'],
 			excludes: ['**/*-sources.jar', '**/*-javadoc.jar'])
 
-	implementation 'org.apache.pdfbox:pdfbox:2.0.17'
-	implementation 'org.bouncycastle:bcpkix-jdk15on:1.64'
+	implementation 'org.apache.pdfbox:pdfbox:2.0.19'
+	implementation 'org.bouncycastle:bcpkix-jdk15on:1.65'
 }
 
 jar {

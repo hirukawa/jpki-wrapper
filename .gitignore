@@ -1,0 +1,5 @@
+/.gradle/
+/.idea/
+/build/
+/jpki-wrapper-internal32/build/
+/jpki-wrapper-internal64/build/
